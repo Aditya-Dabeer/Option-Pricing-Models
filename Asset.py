@@ -16,10 +16,7 @@ class Asset():
                 retrieve = yf.download(ticker, start=start_date, end=end_date)
             else:
                 retrieve = yf.download(ticker)  #['Adj Close']
-            if retrieve:
-                return retrieve
-            else:
-                return None
+            return retrieve
         except Exception as e:
             print(e)
             return None
@@ -62,7 +59,7 @@ class Asset():
         column_name: name of the column in dataframe
         """
         try:
-            if data:
+            if data is not None:
                 data[column_name].plot()
                 plt.ylabel(f'{column_name}')
                 plt.xlabel('Date')
