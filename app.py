@@ -38,23 +38,26 @@ if pricing_method == Choices.BLACK_SCHOLES.value:
     if st.button(f'Calculate option price for {ticker}'):
         # Getting data for selected ticker
         data = Asset.get_historical_data(ticker)
-        st.write(data.tail())
-        Asset.plot_data(data, ticker, 'Adj Close')
-        st.pyplot()
+        if data.empty == False:
+            st.write(data.tail())
+            Asset.plot_data(data, ticker, 'Adj Close')
+            st.pyplot()
 
-        price = Asset.get_last_price(data, 'Adj Close') 
-        risk_free_rate = risk_free_rate / 100
-        vol = vol / 100
-        days_to_maturity = (exercise_date - datetime.now().date()).days
+            price = Asset.get_last_price(data, 'Adj Close') 
+            risk_free_rate = risk_free_rate / 100
+            vol = vol / 100
+            days_to_maturity = (exercise_date - datetime.now().date()).days
 
-        # Calculating option price
-        BSM = Black_Scholes(price, strike_price, days_to_maturity, risk_free_rate, vol)
-        # call_option_price = BSM.calc_price('Call Option')
-        # put_option_price = BSM.calc_price('Put Option')
-        option_price = BSM.calc_price(option)
+            # Calculating option price
+            BSM = Black_Scholes(price, strike_price, days_to_maturity, risk_free_rate, vol)
+            # call_option_price = BSM.calc_price('Call Option')
+            # put_option_price = BSM.calc_price('Put Option')
+            option_price = BSM.calc_price(option)
 
-        # Displaying call/put option price
-        st.subheader(f'{option} option price: {option_price}')
+            # Displaying call/put option price
+            st.subheader(f'{option} option price: {option_price}')
+        else:
+            st.subheader(f'No data for {ticker} found!')
 
 
 
@@ -69,24 +72,27 @@ elif pricing_method == Choices.BINOMIAL.value:
     number_of_time_steps = st.slider('Number of time steps', 1000, 100000, 10000)
 
     if st.button(f'Calculate option price for {ticker}'):
-         # Getting data for selected ticker
+        # Getting data for selected ticker
         data = get_asset_price(ticker)
-        st.write(data.tail())
-        Asset.plot_data(data, ticker, 'Adj Close')
-        st.pyplot()
+        if data.empty == False:  
+            st.write(data.tail())
+            Asset.plot_data(data, ticker, 'Adj Close')
+            st.pyplot()
 
-        # Formating simulation parameters
-        underlying = Asset.get_last_price(data, 'Adj Close') 
-        risk_free_rate = risk_free_rate / 100
-        volitility = vol / 100
-        days_to_maturity = (exercise_date - datetime.now().date()).days
+            # Formating simulation parameters
+            underlying = Asset.get_last_price(data, 'Adj Close') 
+            risk_free_rate = risk_free_rate / 100
+            volitility = vol / 100
+            days_to_maturity = (exercise_date - datetime.now().date()).days
 
-        # Calculating option price
-        B = Binomial(underlying, strike_price, days_to_maturity, risk_free_rate, volitility, number_of_time_steps)
-        option_price = B.calc_price(option)
+            # Calculating option price
+            B = Binomial(underlying, strike_price, days_to_maturity, risk_free_rate, volitility, number_of_time_steps)
+            option_price = B.calc_price(option)
 
-        # Displaying call/put option price
-        st.subheader(f'{option} option price: {option_price}')
+            # Displaying call/put option price
+            st.subheader(f'{option} option price: {option_price}')
+        else:
+            st.subheader(f'No data for {ticker} found!')
 
 
 elif pricing_method == Choices.MONTE_CARLO.value:
@@ -103,25 +109,28 @@ elif pricing_method == Choices.MONTE_CARLO.value:
     if st.button(f'Calculate option price for {ticker}'):
         # Getting data for selected ticker
         data = get_asset_price(ticker)
-        st.write(data.tail())
-        Asset.plot_data(data, ticker, 'Adj Close')
-        st.pyplot()
+        if data.empty == False:
+            st.write(data.tail())
+            Asset.plot_data(data, ticker, 'Adj Close')
+            st.pyplot()
 
-        # Formating simulation parameters
-        spot_price = Asset.get_last_price(data, 'Adj Close') 
-        risk_free_rate = risk_free_rate / 100
-        vol = vol / 100
-        days_to_maturity = (exercise_date - datetime.now().date()).days
+            # Formating simulation parameters
+            spot_price = Asset.get_last_price(data, 'Adj Close') 
+            risk_free_rate = risk_free_rate / 100
+            vol = vol / 100
+            days_to_maturity = (exercise_date - datetime.now().date()).days
 
-        # ESimulating stock movements
-        MC = MonteCarlo(spot_price, strike_price, days_to_maturity, risk_free_rate, vol, number_of_simulations)
-        MC.simulate_prices()
+            # ESimulating stock movements
+            MC = MonteCarlo(spot_price, strike_price, days_to_maturity, risk_free_rate, vol, number_of_simulations)
+            MC.simulate_prices()
 
-        # Visualizing Monte Carlo Simulation
-        MC.plot_simulation_results(num_of_movements)
-        st.pyplot()
+            # Visualizing Monte Carlo Simulation
+            MC.plot_simulation_results(num_of_movements)
+            st.pyplot()
 
-        # Calculating call/put option price
-        option_price = MC.calc_price(option)
-        # Displaying call/put option price
-        st.subheader(f'{option} option price: {option_price}')
+            # Calculating call/put option price
+            option_price = MC.calc_price(option)
+            # Displaying call/put option price
+            st.subheader(f'{option} option price: {option_price}')
+        else:
+            st.subheader(f'No data for {ticker} found!')
